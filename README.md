@@ -1,4 +1,4 @@
-# Othelo-Game-Project-IA-2425
+# Othello-Game-Project-IA-2425
 
 ### Dependency Installation
 
