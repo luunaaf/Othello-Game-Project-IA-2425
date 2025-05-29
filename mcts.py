@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import random
+from othelo_game import get_legal_moves, next_state, is_terminal, is_non_terminal
 """" El algoritmo MCTS viene definido por los pasos selección, expansión, simulación y backtracking"""
 class Node:
     def __init__ (self, state, player, parent):
@@ -13,28 +14,32 @@ class Node:
         self.player = player
         self.q_value = 0.0
     
-    def is_not_fully_expanded(self, game):
-        return len(self.children) != len(game.get_legal_moves(self.state, self.player))
     
-    def is_terminal(self, state):
-        return np.all(state != 0)
+    
 
-def uct_search(initialState, budget,cp, game):
+def uct_search(initialState, budget,cp):
         root = Node(state = initialState)
-        for i in range(budget):
+        for _ in range(budget):
             node = tree_policy(root, cp, game)
             reward = default_policy(node.state)
             backup(node, reward)
         best_child_node = best_child(root,cp) 
         return best_child_node.action
 
-def default_policy(state, game):
-    current_state = state
+def default_policy(s):
+    current_state = s
     current_player = 1
-     # TODO
+    while not is_terminal(current_state):
+        actions = get_legal_moves(current_state, current_player)
+        if not actions:
+            break
+        action = random.choice(actions)
+        current_state = next_state(current_state, action, current_player)
+        current_player *= -1
+    return get_result(current_state, 1)
 
 def tree_policy(node, cp, game):
-    while node.is_non_terminal(game):
+    while is_non_terminal(game):
          if(node.is_not_fully_expanded(node)):
               return expand(node)
          else:
@@ -46,8 +51,7 @@ def expand(node, game):
     next_state = game.next_state(node.state, a, node.player)
     child = Node(state = next, parent=node, player= -v.player)
     child.action = a
-    # TODO
-    #child.untried_actions = game.get_legal_moves(next_state, child.player)
+    child.untried_actions = game.get_legal_moves(next_state, child.player)
     node.children.append(child)
     return child
 
