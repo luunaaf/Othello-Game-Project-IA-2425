@@ -69,8 +69,15 @@ while True:
     draw_board()
     pygame.display.flip()
 
-    if game.is_terminal(state):
+    if game.is_terminal(state) or (
+        not game.get_legal_moves(state, current_player) and
+        not game.get_legal_moves(state, 3 - current_player) 
+    ):
         show_winner()
+
+    if not game.get_legal_moves(state, current_player):
+        current_player = 3 - current_player
+        continue
 
     if current_player == ai_color and game.get_legal_moves(state, ai_color):
         move = uct_search(state, ai_color, budget=100, cp=1.4)
