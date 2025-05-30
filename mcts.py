@@ -25,7 +25,7 @@ def uct_search(initialState, budget,cp):
         for _ in range(budget):
             node = tree_policy(root, cp)
             reward = default_policy(node.state)
-            backup(node, reward)
+            backup_negamax(node, reward)
         best_child_node = best_child(root,cp) 
         return best_child_node.action
 
@@ -77,10 +77,11 @@ def best_child(node, c): #c = parametro de exploracion
            
     return random.choice(best_children)
 
-def backup(state, reward):
+def backup_negamax(state, reward):
      while state is not None:
           state.visitis += 1
           state.q_value += reward
+          reward = -reward
           state = state.parent
      
 
