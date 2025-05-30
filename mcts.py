@@ -84,7 +84,7 @@ def best_child(node, c): #c = parametro de exploracion
            
     return random.choice(best_children)
 
-def backup(state, reward):
+def backup_negamax(state, reward):
      while state is not None:
           state.visits += 1
           state.q_value += reward
