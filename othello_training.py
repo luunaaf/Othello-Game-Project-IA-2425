@@ -77,7 +77,7 @@ def create_model(input_shape=(8, 8, 1)):
     return model
 
 if __name__ == "__main__":
-    X, y = generate_data(games=10, budget=10, cp=1.4)
+    X, y = generate_data(games=100, budget=10, cp=1.4)
     X = X.reshape(-1, 8, 8, 1).astype('float32') 
     y = y.astype('float32')
 
