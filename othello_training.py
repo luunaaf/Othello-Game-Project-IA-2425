@@ -7,7 +7,7 @@ from othello_game import OthelloGame
 game = OthelloGame()
 
 def print_board(state):
-    symbols = {0: '0', 1: 'O', 2: 'X'}  
+    symbols = {0: '0', 1: '1', 2: '2'}  
     for row in state:
         print(' '.join(symbols[cell] for cell in row))
     print()
