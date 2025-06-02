@@ -25,9 +25,9 @@ pygame.display.set_caption("Othello by Estrella & Loubna")
 game = OthelloGame()
 state = game.get_initial_state()
 
-human_color = 1  # Blanco
-ai_color = 2     # Azul
-current_player = 1
+human_color = 2  # Blanco
+ai_color = 1     # Azul
+current_player = 2
 
 history = []  
 
