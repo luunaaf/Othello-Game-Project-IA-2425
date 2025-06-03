@@ -9,7 +9,7 @@ pygame.init()
 TILE_SIZE = 80
 BOARD_SIZE = 8
 WIDTH = TILE_SIZE * BOARD_SIZE
-HEIGHT = TILE_SIZE * BOARD_SIZE + 40 
+HEIGHT = TILE_SIZE * BOARD_SIZE + 40
 FONT = pygame.font.SysFont("arial", 24)
 
 LIGHT_PINK = (250, 220, 228)
@@ -27,12 +27,12 @@ state = game.get_initial_state()
 
 human_color = 2  # Blanco
 ai_color = 1     # Azul
-current_player = 2
+current_player = human_color
 
-history = []  
+history = []
 
 def print_board(state):
-    symbols = {0: '0', 1: '1', 2: '2'}  
+    symbols = {0: '0', 1: '1', 2: '2'}
     for row in state:
         print(' '.join(symbols[cell] for cell in row))
     print()
@@ -62,9 +62,9 @@ def show_winner():
     if white_count > black_count:
         msg = "GANASTE TÚ"
     elif black_count > white_count:
-        msg = "GANÓ LA IA" 
+        msg = "GANÓ LA IA"
     else:
-        msg = "EMPATE "
+        msg = "EMPATE"
 
     text = FONT.render(msg, True, BLACK)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
@@ -86,7 +86,7 @@ while True:
         elif black_count > white_count:
             winner = 2
         else:
-            winner = 0  
+            winner = 0
 
         print("\n== RESULTADOS DE LA PARTIDA ==")
         for idx, (s, p) in enumerate(history):
@@ -95,11 +95,16 @@ while True:
             print_board(s)
 
         show_winner()
-    legal_moves = game.get_legal_moves(state, current_player)
-    if not legal_moves:
+
+    next_player = game.get_next_player(state, current_player)
+
+    if next_player is None:
+        continue  # Ningún jugador puede jugar, el juego terminará en el siguiente ciclo
+
+    if next_player != current_player:
         print(f"Jugador {current_player} no tiene movimientos válidos. Pasa turno.")
-        current_player = 3 - current_player
-        continue
+
+    current_player = next_player
 
     if current_player == ai_color:
         move = uct_search(state, ai_color, budget=100, cp=1.4)
@@ -108,7 +113,6 @@ while True:
             print(f"[IA] Jugador {ai_color} movió a {move}")
             print_board(state)
             history.append((state.copy(), ai_color))
-        current_player = human_color
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -126,4 +130,3 @@ while True:
                 print(f"[HUMANO] Jugador {human_color} movió a {move}")
                 print_board(state)
                 history.append((state.copy(), human_color))
-                current_player = ai_color
