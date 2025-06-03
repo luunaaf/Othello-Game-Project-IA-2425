@@ -13,7 +13,6 @@ class Node:
         self.parent = parent
         self.children = []
         self.untried_actions = game.get_legal_moves(state, player)
-        self.wins = 0
         self.visits = 0
         self.state = state
         self.player = player
