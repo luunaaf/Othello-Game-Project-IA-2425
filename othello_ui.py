@@ -25,8 +25,8 @@ pygame.display.set_caption("Othello by Estrella & Loubna")
 game = OthelloGame()
 state = game.get_initial_state()
 
-human_color = 2  # Blanco
-ai_color = 1     # Azul
+human_color = 2  # Azul
+ai_color = 1     # Blanco
 current_player = 2
 
 history = []  
@@ -60,11 +60,11 @@ def show_winner():
     white_count = np.sum(state == 1)
     black_count = np.sum(state == 2)
     if white_count > black_count:
-        msg = "GANASTE TÚ"
+        msg = "GANÓ LA IA"
     elif black_count > white_count:
-        msg = "GANÓ LA IA" 
+        msg = "GANASTE TÚ" 
     else:
-        msg = "EMPATE "
+        msg = "EMPATE"
 
     text = FONT.render(msg, True, BLACK)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
