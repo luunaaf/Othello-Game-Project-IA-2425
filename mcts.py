@@ -5,7 +5,7 @@ from othello_game import OthelloGame
 import tensorflow as tf
 
 """" El algoritmo MCTS viene definido por los pasos selección, expansión, simulación y backtracking"""
-model = tf.keras.models.load_model("othello_training_model_150.h5")
+model = tf.keras.models.load_model("othello_training_model_300.h5")
 game = OthelloGame()
 
 class Node:

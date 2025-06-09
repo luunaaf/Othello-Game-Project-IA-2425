@@ -1,8 +1,10 @@
 import numpy as np
 import random
 import tensorflow as tf
+from keras.callbacks import EarlyStopping
 from mcts import uct_search
 from othello_game import OthelloGame
+
 
 game = OthelloGame()
 
@@ -58,30 +60,43 @@ def generate_data(games, budget=100, cp=1.4):
     return np.array(X), np.array(y)
 
 
+early_stop = EarlyStopping(
+    monitor='val_loss',    # métrica que se monitorea
+    patience=5,            # cuántas épocas sin mejora esperar antes de parar
+    restore_best_weights=True  # recupera los mejores pesos automáticamente
+)
+
 # diseñamos la red neuronal
 
 def create_model(input_shape=(8, 8, 1)):
     model = tf.keras.Sequential([
-        tf.keras.layers.Input(shape=input_shape),  # tablero 8×8 con 1 canal (cada celda puede ser 0, 1 o 2)
+        tf.keras.layers.Input(shape=input_shape),
+        tf.keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+        tf.keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(32, activation='relu'),# capa oculta con función de activación ReLU
-        tf.keras.layers.Dense(1, activation='tanh')# en capa de salida se utiliza 'tanh' para que la salida sea entre -1 y 1
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(1, activation='tanh')  # salida entre -1 y 1
     ])
     model.compile(
-    optimizer=tf.keras.optimizers.Adam(),
-    loss= tf.keras.losses.MeanSquaredError(),
-    metrics=[tf.keras.metrics.MeanAbsoluteError()]
-
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+        loss='mean_squared_error',
+        metrics=['mae']
     )
-
     return model
 
+
 if __name__ == "__main__":
-    X, y = generate_data(games=100, budget=10, cp=1.4)
+    X, y = generate_data(games=40, budget=10, cp=0.4)
     X = X.reshape(-1, 8, 8, 1).astype('float32') 
     y = y.astype('float32')
 
     model = create_model()
-    model.fit(X, y, epochs=20, batch_size=64, validation_split=0.2)
+    model.fit(
+    X, y,
+    epochs=50,
+    batch_size=64,
+    validation_split=0.2,
+    callbacks=[early_stop] 
+    )
 
-    model.save("othello_training_model.h5")
+    model.save("othello_training_model_40_cp04.h5")
