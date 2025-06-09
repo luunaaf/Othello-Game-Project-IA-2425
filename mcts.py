@@ -5,7 +5,7 @@ from othello_game import OthelloGame
 import tensorflow as tf
 
 """" El algoritmo MCTS viene definido por los pasos selección, expansión, simulación y backtracking"""
-model = tf.keras.models.load_model("othello_training_model.h5")
+model = tf.keras.models.load_model("othello_training_model_100_nn.h5")
 game = OthelloGame()
 
 class Node:
@@ -84,13 +84,13 @@ def best_child(node, c): #c = parametro de exploracion
            
     return random.choice(best_children)
 
-def backup_negamax(state, reward):
-     while state is not None:
-          state.visits += 1
-          state.q_value += reward
-          reward = -reward
-          state = state.parent
-     
+def backup(node, reward):
+    while node is not None:
+        node.visits += 1
+        node.q_value += reward
+        reward = -reward
+        node = node.parent
+
 
 
 

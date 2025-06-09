@@ -25,14 +25,15 @@ pygame.display.set_caption("Othello by Estrella & Loubna")
 game = OthelloGame()
 state = game.get_initial_state()
 
-human_color = 2  # Blanco
-ai_color = 1     # Azul
+human_color = 2  
+ai_color = 1     
 current_player = 2
 
-history = []  
+history = []
+pass_count = 0
 
 def print_board(state):
-    symbols = {0: '0', 1: '1', 2: '2'}  
+    symbols = {0: '0', 1: '1', 2: '2'}
     for row in state:
         print(' '.join(symbols[cell] for cell in row))
     print()
@@ -60,16 +61,16 @@ def show_winner():
     white_count = np.sum(state == 1)
     black_count = np.sum(state == 2)
     if white_count > black_count:
-        msg = "GANASTE TÚ"
+        msg = "GANÓ LA IA"
     elif black_count > white_count:
-        msg = "GANÓ LA IA" 
+        msg = "GANASTE TÚ"
     else:
-        msg = "EMPATE "
+        msg = "EMPATE"
 
     text = FONT.render(msg, True, BLACK)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
     pygame.display.flip()
-    pygame.time.wait(5000)
+    pygame.time.wait(3000)
     pygame.quit()
     sys.exit()
 
@@ -78,28 +79,19 @@ while True:
     pygame.display.flip()
 
     if game.is_terminal(state):
-        white_count = np.sum(state == 1)
-        black_count = np.sum(state == 2)
-
-        if white_count > black_count:
-            winner = 1
-        elif black_count > white_count:
-            winner = 2
-        else:
-            winner = 0  
-
-        print("\n== RESULTADOS DE LA PARTIDA ==")
-        for idx, (s, p) in enumerate(history):
-            label = 1 if winner == p else -1 if winner != 0 and winner != p else 0
-            print(f"Turno {idx+1} - Jugador {p} - Resultado: {label}")
-            print_board(s)
-
         show_winner()
+
     legal_moves = game.get_legal_moves(state, current_player)
+
     if not legal_moves:
         print(f"Jugador {current_player} no tiene movimientos válidos. Pasa turno.")
+        pass_count += 1
+        if pass_count == 2:
+            break
         current_player = 3 - current_player
         continue
+    else:
+        pass_count = 0
 
     if current_player == ai_color:
         move = uct_search(state, ai_color, budget=100, cp=1.4)
@@ -114,12 +106,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
         elif event.type == pygame.MOUSEBUTTONDOWN and current_player == human_color:
             mx, my = pygame.mouse.get_pos()
             grid_x = mx // TILE_SIZE
             grid_y = (my - 40) // TILE_SIZE
-
             move = (grid_y, grid_x)
             if move in game.get_legal_moves(state, human_color):
                 state = game.next_state(state, move, human_color)
